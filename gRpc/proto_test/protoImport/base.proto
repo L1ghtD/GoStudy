@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "./;protoImport";
+
+service Greeter {
+  rpc Ping(Empty) returns(Pong);
+}
+
+message Empty { }
+
+message Pong {
+  string data = 1;
+}

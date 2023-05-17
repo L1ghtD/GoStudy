@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 // 固定写法，表示生成在当前目录;然后生成的go代码以proto为包名
-option go_package = "./;proto";
+option go_package = "./;protoImport";
 
 service Greeter {
   rpc GetStream(StreamReqData) returns(stream StreamRspData); //服务端流模式

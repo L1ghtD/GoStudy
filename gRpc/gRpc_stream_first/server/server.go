@@ -5,6 +5,7 @@ import (
 	"goStudy/gRpc/gRpc_stream_first/proto"
 	"google.golang.org/grpc"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -31,11 +32,38 @@ func (*server) GetStream(req *proto.StreamReqData, rsp proto.Greeter_GetStreamSe
 
 // 客户端流模式
 func (*server) PutStream(clientStr proto.Greeter_PutStreamServer) error {
+	for {
+		if r, err := clientStr.Recv(); err != nil {
+			fmt.Println(err)
+			break
+		} else {
+			fmt.Println(r)
+		}
+	}
 	return nil
 }
 
 // 双向流模式
 func (*server) AllStream(allStr proto.Greeter_AllStreamServer) error {
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		for {
+			res, _ := allStr.Recv()
+			fmt.Println(res)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		for {
+			_ = allStr.Send(&proto.StreamRspData{
+				Data: "我是服务器端",
+			})
+			time.Sleep(time.Second)
+		}
+	}()
+	wg.Wait()
 	return nil
 }
 
